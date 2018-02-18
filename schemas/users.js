@@ -3,10 +3,10 @@
  */
 var mongoose = require('mongoose');
 
-//ÓÃ»§µÄ±í½á¹¹
+//ç”¨æˆ·çš„è¡¨ç»“æ„
 module.exports = new mongoose.Schema({
-    //ÓÃ»§Ãû
+    //ç”¨æˆ·å
     username: String,
-    //ÃÜÂë
+    //å¯†ç 
     password: String
 })

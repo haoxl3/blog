@@ -31,7 +31,7 @@ $(function() {
             dataType: 'json',
             success: function(result) {
                 $registerBox.find('.colWarning').html(result.message);
-
+                console.log(result.message)
                 if (!result.code) {
                     //注册成功
                     setTimeout(function() {
