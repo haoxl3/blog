@@ -1,5 +1,6 @@
 //加载express模块
 var express = require('express');
+var mongoose = require('mongoose');
 //加载模板
 var swig = require('swig');
 //创建app应用=>NodeJs Http.createServer()
@@ -18,6 +19,11 @@ app.set('views','./views');
 app.set('view engine','html');
 //在开发过程中，需要取消模板缓存
 swig.setDefaults({cache: false});
+
+//根据不同的功能划分模块
+app.use('/admin',require('./routers/admin'));
+app.use('/api',require('./routers/api'));
+app.use('/',require('./routers/main'));
 /*
 * 首页
 * */
@@ -29,6 +35,15 @@ app.get('/',function(req,res,next){
     * 第二个参数：传递给模板使用的数据
     * */
     res.render('index');
-})
-//监听http请求
-app.listen(8081)
+});
+
+//连接数据库
+mongoose.connect('mongodb://localhost:27017/blog', function(err){
+    if(err){
+        console.log('fail');
+    }else{
+        console.log('success');
+        //监听http请求
+        app.listen(8081)
+    }
+});
