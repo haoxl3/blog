@@ -57,11 +57,22 @@ $(function() {
             dataType: 'json',
             success: function(result) {
 
-                $loginBox.find('.colWarning').html(result.message);
+                // $loginBox.find('.colWarning').html(result.message);
 
-                if (!result.code) {
-                    //登录成功
-                    window.location.reload();
+                // if (!result.code) {
+                //     //登录成功
+                //     window.location.reload();
+                // }
+                $loginBox.find('.colWarning').html(result.message);
+                //登录成功
+                if(!result.code){
+                    setTimeout(function(){
+                        $loginBox.hide();
+                        $userInfo.show();
+                        //显示登录用户的信息
+                        $userInfo.find('.username').html(result.userInfo.username);
+                        $userInfo.find('.info').html('welcome to my blog');
+                    },1000);
                 }
             }
         })

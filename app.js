@@ -5,11 +5,18 @@ var mongoose = require('mongoose');
 var swig = require('swig');
 //加载body-parser,用来处理post提交过来的数据
 var bodyParser = require('body-parser');
+//加载cookies模块
+var Cookies = require('cookies');
 //创建app应用=>NodeJs Http.createServer()
 var app = express();
 
 //bodyparser设置
 app.use(bodyParser.urlencoded({extended: true}));
+//设置cookie
+app.use(function(req, res, next){
+    req.cookies = new Cookies(req, res);
+    next();
+});
 //设置静态文件托管,当用户访问URL以/public开始，那么将直接返回publick下文件
 app.use('/public',express.static(__dirname+'/public'));
 
