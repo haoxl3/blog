@@ -7,6 +7,8 @@ var swig = require('swig');
 var bodyParser = require('body-parser');
 //加载cookies模块
 var Cookies = require('cookies');
+//引用user模型，判断角色
+var User = require('./models/User');
 //创建app应用=>NodeJs Http.createServer()
 var app = express();
 
@@ -20,9 +22,17 @@ app.use(function(req, res, next){
     if(req.cookies.get('userInfo')){
         try{
             req.userInfo = JSON.parse(req.cookies.get('userInfo'));
-        }catch(e){}
+            //获取当前登录用户的类型，是否是管理员
+            User.findById(req.userInfo._id).then(function(userInfo){
+                req.userInfo.isAdmin = Boolean(userInfo.isAdmin);
+                next();
+            })
+        }catch(e){
+            next();
+        }
+    }else{
+        next();
     }
-    next();
 });
 //设置静态文件托管,当用户访问URL以/public开始，那么将直接返回publick下文件
 app.use('/public',express.static(__dirname+'/public'));
