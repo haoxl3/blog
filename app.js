@@ -15,6 +15,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 //设置cookie
 app.use(function(req, res, next){
     req.cookies = new Cookies(req, res);
+    //如果cookie中有用户的登录信息，则取cookie中的值
+    req.userInfo = {};
+    if(req.cookies.get('userInfo')){
+        try{
+            req.userInfo = JSON.parse(req.cookies.get('userInfo'));
+        }catch(e){}
+    }
     next();
 });
 //设置静态文件托管,当用户访问URL以/public开始，那么将直接返回publick下文件

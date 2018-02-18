@@ -66,13 +66,14 @@ $(function() {
                 $loginBox.find('.colWarning').html(result.message);
                 //登录成功
                 if(!result.code){
-                    setTimeout(function(){
-                        $loginBox.hide();
-                        $userInfo.show();
-                        //显示登录用户的信息
-                        $userInfo.find('.username').html(result.userInfo.username);
-                        $userInfo.find('.info').html('welcome to my blog');
-                    },1000);
+                    // setTimeout(function(){
+                    //     $loginBox.hide();
+                    //     $userInfo.show();
+                    //     //显示登录用户的信息
+                    //     $userInfo.find('.username').html(result.userInfo.username);
+                    //     $userInfo.find('.info').html('welcome to my blog');
+                    // },1000);
+                    window.location.reload();
                 }
             }
         })
