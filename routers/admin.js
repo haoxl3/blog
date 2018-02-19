@@ -4,6 +4,7 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/User');
+var Catetory = require('../models/Category');
 
 router.use(function(req, res, next){
     if(!req.userInfo.isAdmin){
@@ -50,5 +51,55 @@ router.get('/user', function(req, res, next){
             })
         });
     });
-})
+});
+
+//分类首页
+router.get('/category', function(req, res, next){
+    res.render('admin/category_index', {
+        userInfo: req.userInfo
+    })
+});
+
+//添加分类
+router.get('/category/add', function(req, res, next){
+    res.render('admin/category_add', {
+        userInfo: req.userInfo
+    });
+});
+
+//分类的保存
+router.post('/category/add', function(req, res, next){
+    var name = req.body.name || '';
+    if(name == ''){
+        res.render('admin/error',{
+            userInfo: req.userInfo,
+            message: '名称不能为空'
+        });
+        return;
+    }
+    //查找数据库中是否已经存在此同名分类
+    Catetory.findOne({
+        name: name 
+    }).then(function(rs){
+        if(rs){
+            //已经存在该分类了
+            res.render('admin/error',{
+                userInfo: req.userInfo,
+                message: '分类已经存在了'
+            })
+            return Promise.reject();
+        }else{
+            //数据库中不存在该分类，可保存
+            return new Catetory({
+                name: name 
+            }).save();
+        }
+    }).then(function(newCategory){
+        res.render('admin/success',{
+            userInfo: req.userInfo,
+            message: '分类保存成功',
+            url: '/admin/category'
+        })
+    });
+});
 module.exports = router;
