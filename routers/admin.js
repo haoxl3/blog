@@ -112,7 +112,7 @@ router.post('/category/add', function(req, res){
         return;
     }
     //查找数据库中是否已经存在此同名分类
-    Catetory.findOne({
+    Category.findOne({
         name: name 
     }).then(function(rs){
         if(rs){
@@ -124,7 +124,7 @@ router.post('/category/add', function(req, res){
             return Promise.reject();
         }else{
             //数据库中不存在该分类，可保存
-            return new Catetory({
+            return new Category({
                 name: name 
             }).save();
         }
@@ -211,5 +211,19 @@ router.post('/category/edit', function(req, res, next){
             url: '/admin/category'
         });
     })
-})
+});
+
+//分类删除
+router.get('/category/delete', function(req, res){
+    var id = req.query.id || '';
+    Category.remove({
+        _id: id
+    }).then(function(){
+        res.render('admin/success',{
+            userInfo: req.userInfo,
+            message:'删除成功',
+            url: '/admin/category'
+        });
+    });
+});
 module.exports = router;
