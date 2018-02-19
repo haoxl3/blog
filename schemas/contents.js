@@ -2,12 +2,12 @@ var mongoose = require('mongoose');
 
 //内容的表结构
 module.exports = new mongoose.Schema({
-    //关联字段
+    //关联字段 ref为关联的模型
     category:{
         //类型
         type: mongoose.Schema.Types.ObjectId,
         //引用
-        ref: 'Content'
+        ref: 'Category'
     },
     //内容标题
     title: String,

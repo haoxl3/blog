@@ -233,7 +233,6 @@ router.get('/content', function(req, res) {
     var page = Number(req.query.page || 1);
     var limit = 10;
     var pages = 0;
-
     Content.count().then(function(count) {
         //计算总页数
         pages = Math.ceil(count / limit);
@@ -241,6 +240,7 @@ router.get('/content', function(req, res) {
         page = Math.min( page, pages );
         //取值不能小于1
         page = Math.max( page, 1 );
+
         var skip = (page - 1) * limit;
 
         Content.find().limit(limit).skip(skip).populate(['category', 'user']).sort({
@@ -249,15 +249,14 @@ router.get('/content', function(req, res) {
             res.render('admin/content_index', {
                 userInfo: req.userInfo,
                 contents: contents,
+
                 count: count,
                 pages: pages,
                 limit: limit,
                 page: page
             });
         });
-
     });
-
 });
 //内容添加页面
 router.get('/content/add', function(req, res){
@@ -299,5 +298,77 @@ router.post('/content/add',function(req,res){
             url: '/admin/content'
         })
     });
-})
+});
+//修改内容
+router.get('/content/edit', function(req,res){
+    var id = req.query.id || '';
+    //为了在Category中查到后在Content中使用，所以先提交定义一下
+    var categories = [];
+    //先找到分类，显示分类下拉框所选的值，再显示内容填写的值
+    Category.find().sort({_id: 1}).then(function(rs) {
+        categories = rs;
+        return Content.findOne({
+            _id: id
+        }).populate('category');//与分类作关联后要用此populate
+    }).then(function(content){
+        if (!content) {
+            res.render('admin/error', {
+                userInfo: req.userInfo,
+                message: '指定内容不存在'
+            });
+            return Promise.reject();
+        } else {
+            res.render('admin/content_edit', {
+                userInfo: req.userInfo,
+                categories: categories,
+                content: content
+            })
+        }
+    });
+});
+//保存修改内容
+router.post('/content/edit', function(req, res){
+    var id = req.query.id || '';
+    if ( req.body.category == '' ) {
+        res.render('admin/error', {
+            userInfo: req.userInfo,
+            message: '内容分类不能为空'
+        })
+        return;
+    }
+    if ( req.body.title == '' ) {
+        res.render('admin/error', {
+            userInfo: req.userInfo,
+            message: '内容标题不能为空'
+        })
+        return;
+    }
+    Content.update({
+        _id: id
+    },{
+        category: req.body.category,
+        title: req.body.title,
+        description: req.body.description,
+        content: req.body.content
+    }).then(function(){
+        res.render('admin/success', {
+            userInfo: req.userInfo,
+            message: '内容保存成功',
+            url: '/admin/content'
+        })
+    });
+});
+//内容删除
+router.get('/content/delete',function(req, res){
+    var id = req.query.id || '';
+    Content.remove({
+        _id: id
+    }).then(function() {
+        res.render('admin/success', {
+            userInfo: req.userInfo,
+            message: '删除成功',
+            url: '/admin/content'
+        });
+    });
+});
 module.exports = router;
