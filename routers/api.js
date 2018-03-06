@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 //引入user模型,相当于有了个User构造函数
 var User = require('../models/User');
+var Content = require('../models/Content');
 
 //统一返回格式
 var responseData;
@@ -107,10 +108,35 @@ router.post('/user/login', function(req, res){
     })
 });
 
-//退出
+/*
+*退出
+*/
 router.get('/user/logout', function(req, res){
     req.cookies.set('userInfo', null);
     res.json(responseData);
 });
 
+/** 
+ * 评论提交
+*/
+router.post('/comment/post', function(req, res){
+    //文章的id
+    var contentId = req.body.contentid || '';
+    var postData = {
+        username: req.userInfo.username,
+        postTime: new Date(),
+        content: req.body.content 
+    };
+    //查询当前这篇文章的信息
+    Content.findOne({
+        _id: contentId
+    }).then(function(content){
+        //给评论字段赋值
+        content.comments.push(postData);
+        return content.save();
+    }).then(function(newContent){
+        responseData.message = '评论成功';
+        res.json(responseData);
+    });
+});
 module.exports = router;

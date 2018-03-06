@@ -14,7 +14,9 @@ $('#messageBtn').on('click', function() {
         },
         success: function(responseData) {
             //console.log(responseData);
+            //清空评论框
             $('#messageContent').val('');
+            //得到当前最新评论并渲染
             comments = responseData.data.comments.reverse();
             renderComment();
         }
