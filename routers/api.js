@@ -136,7 +136,21 @@ router.post('/comment/post', function(req, res){
         return content.save();
     }).then(function(newContent){
         responseData.message = '评论成功';
+        responseData.data = newContent;
         res.json(responseData);
     });
 });
+
+/** 
+ * 获取指定文章的所有评论
+*/
+router.get('/comment', function(req, res){
+    var contentId = req.query.contentid || '';
+    Content.findOne({
+        _id: contentId
+    }).then(function(content){
+        responseData.data = content.comments;
+        res.json(responseData);
+    })
+})
 module.exports = router;

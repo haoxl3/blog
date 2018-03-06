@@ -17,6 +17,7 @@ $('#messageBtn').on('click', function() {
             //清空评论框
             $('#messageContent').val('');
             //得到当前最新评论并渲染
+            console.log(responseData)
             comments = responseData.data.comments.reverse();
             renderComment();
         }
@@ -30,11 +31,12 @@ $.ajax({
         contentid: $('#contentId').val()
     },
     success: function(responseData) {
-        comments =responseData.data.reverse();
+        comments = responseData.data.reverse();
         renderComment();
     }
 });
 
+//上一页/下一页，采用事件委托
 $('.pager').delegate('a', 'click', function() {
     if ($(this).parent().hasClass('previous')) {
         page--;
@@ -45,10 +47,11 @@ $('.pager').delegate('a', 'click', function() {
 });
 
 function renderComment() {
-
+    //总评论数
     $('#messageCount').html(comments.length);
-
+    //总页数
     pages = Math.max(Math.ceil(comments.length / prepage), 1);
+    //每页条数的起始与末尾数
     var start = Math.max(0, (page-1) * prepage);
     var end = Math.min(start + prepage, comments.length);
 
@@ -61,6 +64,7 @@ function renderComment() {
     } else {
         $lis.eq(0).html('<a href="javascript:;">上一页</a>');
     }
+
     if (page >= pages) {
         page = pages;
         $lis.eq(2).html('<span>没有下一页了</span>');
@@ -79,7 +83,6 @@ function renderComment() {
         }
         $('.messageList').html(html);
     }
-
 }
 
 function formatDate(d) {
